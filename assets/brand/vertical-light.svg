@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 380" role="img" aria-labelledby="title desc">
   <title id="title">DEE KAY CEE</title><desc id="desc">Stacked DEE KAY CEE logo with a mannequin inside the letter D.</desc>
-  <path fill="#6d1838" d="M120 12h80c57 0 100 43 100 100v38c0 57-43 100-100 100h-80C63 250 20 207 20 150v-38C20 55 63 12 120 12Z"/><path fill="#fbf8f2" d="M98 62h44c38 0 61 22 61 55s-23 55-61 55H98V62Zm21 21v68h23c25 0 39-10 39-34s-14-34-39-34h-23Z"/><path fill="#fbf8f2" d="M142 82c-8 0-14 6-14 14s6 14 14 14 14-6 14-14-6-14-14-14Zm-24 72 10-28h28l10 28h-16l-8-16-8 16h-16Z"/>
+  <image href="icon-light.svg" x="80" y="30" width="160" height="160"/>
   <text x="160" y="302" text-anchor="middle" fill="#6d1838" font-family="Georgia,serif" font-size="43" font-style="italic" font-weight="700" letter-spacing="-2">DEE KAY</text><text x="160" y="348" text-anchor="middle" fill="#6d1838" font-family="Georgia,serif" font-size="43" font-style="italic" font-weight="700" letter-spacing="-2">CEE</text>
 </svg>
