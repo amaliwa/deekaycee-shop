@@ -1,8 +1,6 @@
 name: Deploy to reseller hosting
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -24,7 +22,7 @@ jobs:
           username: ${{ secrets.DEPLOY_FTPS_USERNAME }}
           password: ${{ secrets.DEPLOY_FTPS_PASSWORD }}
           port: ${{ vars.DEPLOY_FTPS_PORT || 21 }}
-          server-dir: ${{ vars.DEPLOY_FTPS_SERVER_DIR }}
+          server-dir: ./
           local-dir: ./
           exclude: |
             **/.git*/**

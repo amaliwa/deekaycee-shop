@@ -17,3 +17,4 @@ CREATE TABLE products (
 
 CREATE INDEX products_category_index ON products(category);
 CREATE INDEX products_stock_status_index ON products(stock_status);
+

@@ -11,3 +11,4 @@ Starter workspace for local website development with PHP, WampServer, and VS Cod
 4. For a quick PHP-only preview, run `php -S localhost:8000` from this folder.
 
 Do not commit `.env` files or hosting credentials. Remote deployment should be configured only after the hosting provider and authentication method are chosen.
+

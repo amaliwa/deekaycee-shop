@@ -18,3 +18,4 @@ Configure these values in the GitHub repository's `production` environment:
 Do not commit hosting passwords, API keys, or `.env` files. Confirm the FTPS server directory with the hosting provider before enabling the first production deployment.
 
 This workflow currently deploys the static storefront prototype. When the Laravel application is introduced, the workflow will be extended to build Composer/frontend dependencies and run the required deployment commands through SSH or hosting cron.
+
