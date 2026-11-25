@@ -2,6 +2,7 @@ const shippingStyles = document.createElement('link'); shippingStyles.rel = 'sty
 const phone = '265888068487';
 let category = 'all';
 let products = [];
+const demoCatalogKey = 'dkc-demo-catalog-v1';
 const grid = document.querySelector('#product-grid');
 const empty = document.querySelector('#empty-state');
 const search = document.querySelector('#search');
@@ -53,5 +54,6 @@ document.querySelectorAll('.filter').forEach(button => button.addEventListener('
 document.querySelectorAll('.lang').forEach(button => button.addEventListener('click', () => setLanguage(button.dataset.lang)));
 grid?.addEventListener('click', e => { if (e.target.closest('a')) return; const card = e.target.closest('.product-card'); const p = products.find(item => item.slug === card?.dataset.slug); if (p) openDetails(p); });
 grid?.addEventListener('keydown', e => { if (e.key !== 'Enter' && e.key !== ' ') return; const p = products.find(item => item.slug === e.target.closest('.product-card')?.dataset.slug); if (p) { e.preventDefault(); openDetails(p); } });
-fetch('data/ai-catalog.json').then(response => response.json()).then(data => { products = data; render(); }).catch(() => { empty.hidden = false; empty.textContent = 'Catalogue temporarily unavailable.'; });
+fetch('data/ai-catalog.json').then(response => response.json()).then(data => { try { products = JSON.parse(localStorage.getItem(demoCatalogKey)) || data; } catch { products = data; } render(); }).catch(() => { empty.hidden = false; empty.textContent = 'Catalogue temporarily unavailable.'; });
+window.addEventListener('storage', event => { if (event.key !== demoCatalogKey || !event.newValue) return; try { products = JSON.parse(event.newValue); render(); } catch {} });
 
