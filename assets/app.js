@@ -1,36 +1,44 @@
 const phone = '265888068487';
-const products = [
-  { name: 'Satin evening dress', category: 'Dresses', price: 'MWK 289,000', stock: 4, tone: '#b88672', tilt: '-4deg' },
-  { name: 'Linen wrap dress', category: 'Dresses', price: 'MWK 219,000', stock: 8, tone: '#d1b98f', tilt: '3deg' },
-  { name: 'City ankle boot', category: 'Footwear', price: 'MWK 349,000', stock: 2, tone: '#473d39', tilt: '-5deg' },
-  { name: 'Everyday white trainer', category: 'Footwear', price: 'MWK 199,000', stock: 0, tone: '#ede9e1', tilt: '2deg' },
-  { name: 'Structured shoulder bag', category: 'Accessories', price: 'MWK 179,000', stock: 5, tone: '#53635b', tilt: '-2deg' },
-  { name: 'Soft knit midi', category: 'Dresses', price: 'MWK 249,000', stock: 3, tone: '#a1a8a0', tilt: '4deg' },
-  { name: 'Everyday leather belt', category: 'Accessories', price: 'MWK 89,000', stock: 12, tone: '#684b3e', tilt: '-3deg' },
-  { name: 'Retro court trainer', category: 'Footwear', price: 'MWK 229,000', stock: 1, tone: '#bb9a68', tilt: '5deg' }
-];
 let category = 'all';
+let products = [];
 const grid = document.querySelector('#product-grid');
 const empty = document.querySelector('#empty-state');
+const search = document.querySelector('#search');
+const overlayFix = document.createElement('style');
+overlayFix.textContent = '.product-image::after{display:none!important}.product-card{cursor:pointer}.product-card .enquire{position:relative;z-index:2}.product-dialog{max-width:760px;width:calc(100% - 32px);padding:0;border:0;border-radius:24px;overflow:hidden;color:#351b2b;background:#fff}.product-dialog::backdrop{background:rgba(38,13,32,.68)}.dialog-media{min-height:300px;background-size:cover;background-position:center;position:relative}.dialog-copy{padding:28px}.dialog-copy h2{margin:.2em 0}.dialog-price{font-size:1.35rem;font-weight:800;color:#8b143e}.dialog-close{position:absolute;right:14px;top:10px;border:0;border-radius:50%;background:#fff;color:#351b2b;font-size:28px;width:42px;height:42px;cursor:pointer;z-index:3}.carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);border:0;border-radius:50%;width:42px;height:42px;background:rgba(255,255,255,.9);color:#6d1838;font-size:32px;line-height:1;cursor:pointer}.carousel-arrow.prev{left:14px}.carousel-arrow.next{right:14px}.carousel-dots{position:absolute;bottom:14px;left:0;right:0;display:flex;justify-content:center;gap:7px}.carousel-dot{width:9px;height:9px;padding:0;border:1px solid #fff;border-radius:50%;background:transparent;cursor:pointer}.carousel-dot.active{background:#fff}.dialog-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}.product-dialog .button{display:inline-block;padding:13px 18px;border-radius:999px;text-decoration:none}.product-dialog .button-primary{background:#8b143e;color:#fff}.product-dialog .button-secondary{border:1px solid #8b143e;color:#8b143e}';
+document.head.appendChild(overlayFix);
 function availability(stock) { return stock === 0 ? ['Out of stock', 'out'] : stock <= 2 ? ['Only ' + stock + ' left', 'low'] : ['In stock', '']; }
+function whatsapp(p) { return `https://wa.me/${phone}?text=${encodeURIComponent(`Hi DKC, I’m enquiring about the ${p.name} (${p.category}, MWK ${p.price_mwk.toLocaleString()}). Is it available?`)}`; }
+const brand = document.querySelector('.site-header .brand'); if (brand) { brand.textContent = 'DKC'; brand.setAttribute('aria-label', 'DEE KAY CEE home'); }
+const footerBrand = document.querySelector('.site-footer .brand'); if (footerBrand) footerBrand.textContent = 'DKC';
+const shippingEyebrow = document.querySelector('.shipping-section .eyebrow'); if (shippingEyebrow) shippingEyebrow.textContent = 'DKC SHOPPING & SHIPPING';
+const heroArt = document.querySelector('.hero-art'); if (heroArt) { heroArt.innerHTML = '<span>SHOP 2A · GOUJI SHOPPING CENTRE</span>'; heroArt.setAttribute('aria-label', 'DKC shop front at Gouji Shopping Centre'); }
+const heroFix = document.createElement('style'); heroFix.textContent = ".hero-art{background:var(--soft) url('assets/shop-front.webp') center/cover no-repeat!important;display:flex!important;align-items:flex-end!important;justify-content:flex-start!important;padding:1.2rem!important;box-shadow:inset 0 -35% 0 rgba(38,13,32,.28)}.hero-art span{position:relative;color:#fff;font-size:.75rem;letter-spacing:.12em;font-weight:800;text-shadow:0 1px 8px rgba(0,0,0,.6)}"; document.head.appendChild(heroFix);
+function openDetails(p) {
+  let dialog = document.querySelector('#product-dialog');
+  if (!dialog) { dialog = document.createElement('dialog'); dialog.id = 'product-dialog'; dialog.className = 'product-dialog'; document.body.appendChild(dialog); }
+  const [label, cls] = availability(p.stock_quantity);
+  const gallery = [p.image, p.image, p.image];
+  let slide = 0;
+  dialog.innerHTML = `<button class="dialog-close" type="button" aria-label="Close product details">×</button><div class="dialog-media" style="background-image:url('${gallery[0]}')"><button class="carousel-arrow prev" type="button" aria-label="Previous image">‹</button><button class="carousel-arrow next" type="button" aria-label="Next image">›</button><div class="carousel-dots">${gallery.map((_, i) => `<button type="button" class="carousel-dot ${i === 0 ? 'active' : ''}" data-slide="${i}" aria-label="View image ${i + 1}"></button>`).join('')}</div></div><div class="dialog-copy"><p class="eyebrow">${p.category}</p><h2>${p.name}</h2><p>${p.description}</p><p class="dialog-price">MWK ${p.price_mwk.toLocaleString()}</p><span class="availability ${cls}">${label}</span><div class="dialog-actions"><a class="button button-primary" href="${whatsapp(p)}" target="_blank" rel="noopener">Enquire on WhatsApp</a><a class="button button-secondary" href="product.html?slug=${p.slug}">View full details</a></div></div>`;
+  const updateSlide = () => { dialog.querySelector('.dialog-media').style.backgroundImage = `url('${gallery[slide]}')`; dialog.querySelectorAll('.carousel-dot').forEach((dot, i) => dot.classList.toggle('active', i === slide)); };
+  dialog.querySelector('.prev').onclick = () => { slide = (slide + gallery.length - 1) % gallery.length; updateSlide(); };
+  dialog.querySelector('.next').onclick = () => { slide = (slide + 1) % gallery.length; updateSlide(); };
+  dialog.querySelectorAll('.carousel-dot').forEach(dot => dot.onclick = () => { slide = Number(dot.dataset.slide); updateSlide(); });
+  dialog.querySelector('.dialog-close').onclick = () => dialog.close();
+  dialog.addEventListener('click', e => { if (e.target === dialog) dialog.close(); }, { once: true });
+  dialog.showModal();
+}
 function render() {
-  const query = document.querySelector('#search').value.toLowerCase();
+  const query = (search?.value || '').toLowerCase();
   const shown = products.filter(p => (category === 'all' || p.category === category) && (!query || `${p.name} ${p.category}`.toLowerCase().includes(query)));
   empty.hidden = shown.length > 0;
-  grid.innerHTML = shown.map(p => {
-    const [label, cls] = availability(p.stock);
-    const msg = encodeURIComponent(`Hi DEEKAYCEE, I’m enquiring about the ${p.name} (${p.category}, ${p.price}). Is it available in my size?`);
-    return `<article class="product-card"><div class="product-image" style="--tone:${p.tone};--tilt:${p.tilt}"><span class="availability ${cls}">${label}</span></div><div class="product-info"><div class="product-meta"><span class="product-name">${p.name}</span><span class="product-price">${p.price}</span></div><div class="product-category">${p.category}</div><a class="enquire" href="https://wa.me/${phone}?text=${msg}" target="_blank" rel="noopener">Enquire on WhatsApp</a></div></article>`;
-  }).join('');
+  grid.innerHTML = shown.map(p => { const [label, cls] = availability(p.stock_quantity); return `<article class="product-card" data-slug="${p.slug}" tabindex="0"><div class="product-image" style="background-image:url('${p.image}');background-size:cover;background-position:center"><span class="availability ${cls}">${label}</span></div><div class="product-info"><div class="product-meta"><span class="product-name">${p.name}</span><span class="product-price">MWK ${p.price_mwk.toLocaleString()}</span></div><div class="product-category">${p.category}</div><a class="enquire" href="${whatsapp(p)}" target="_blank" rel="noopener">Enquire on WhatsApp</a></div></article>`; }).join('');
 }
-function setLanguage(next) {
-  document.documentElement.lang = next === 'ny' ? 'ny' : 'en';
-  document.querySelectorAll('[data-en][data-ny]').forEach(el => { el.textContent = el.dataset[next]; });
-  document.querySelectorAll('.lang').forEach(button => button.classList.toggle('active', button.dataset.lang === next));
-}
-document.querySelector('#search').addEventListener('input', render);
-document.querySelectorAll('.filter').forEach(button => button.addEventListener('click', () => {
-  document.querySelector('.filter.active').classList.remove('active'); button.classList.add('active'); category = button.dataset.category; render();
-}));
+function setLanguage(next) { document.documentElement.lang = next === 'ny' ? 'ny' : 'en'; document.querySelectorAll('[data-en][data-ny]').forEach(el => { el.textContent = el.dataset[next]; }); document.querySelectorAll('.lang').forEach(button => button.classList.toggle('active', button.dataset.lang === next)); }
+search?.addEventListener('input', render);
+document.querySelectorAll('.filter').forEach(button => button.addEventListener('click', () => { document.querySelector('.filter.active')?.classList.remove('active'); button.classList.add('active'); category = button.dataset.category; render(); }));
 document.querySelectorAll('.lang').forEach(button => button.addEventListener('click', () => setLanguage(button.dataset.lang)));
-render();
+grid?.addEventListener('click', e => { if (e.target.closest('a')) return; const card = e.target.closest('.product-card'); const p = products.find(item => item.slug === card?.dataset.slug); if (p) openDetails(p); });
+grid?.addEventListener('keydown', e => { if (e.key !== 'Enter' && e.key !== ' ') return; const p = products.find(item => item.slug === e.target.closest('.product-card')?.dataset.slug); if (p) { e.preventDefault(); openDetails(p); } });
+fetch('data/ai-catalog.json').then(response => response.json()).then(data => { products = data; render(); }).catch(() => { empty.hidden = false; empty.textContent = 'Catalogue temporarily unavailable.'; });
