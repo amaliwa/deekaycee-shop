@@ -5,7 +5,7 @@ function availability(stock) { return stock === 0 ? ['Out of stock', 'out'] : st
 fetch('data/ai-catalog.json').then(r => r.json()).then(items => {
   const p = items.find(item => item.slug === slug) || items[0];
   const [label, cls] = availability(p.stock_quantity);
-  const message = encodeURIComponent(`Hi DEEKAYCEE, I’m enquiring about the ${p.name} (${p.category}, MWK ${p.price_mwk.toLocaleString()}). Is it available?`);
+  const message = encodeURIComponent(`Hi DKC, I’m enquiring about the ${p.name} (${p.category}, MWK ${p.price_mwk.toLocaleString()}). Is it available?`);
   document.title = `${p.name} | DEEKAYCEE Shopping & Shipping`;
   document.querySelector('meta[name="description"]').content = p.description;
   const ld = document.createElement('script'); ld.type = 'application/ld+json'; ld.textContent = JSON.stringify({ '@context':'https://schema.org', '@type':'Product', name:p.name, description:p.description, image:[new URL(p.image, location.href).href], offers:{ '@type':'Offer', priceCurrency:'MWK', price:p.price_mwk, availability:p.stock_quantity ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock', url:location.href } }); document.head.appendChild(ld);
