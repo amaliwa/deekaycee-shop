@@ -31,7 +31,7 @@ function openDetails(p) {
   let dialog = document.querySelector('#product-dialog');
   if (!dialog) { dialog = document.createElement('dialog'); dialog.id = 'product-dialog'; dialog.className = 'product-dialog'; document.body.appendChild(dialog); }
   const [label, cls] = availability(p.stock_quantity);
-  const gallery = [p.image, p.image, p.image];
+  const gallery = [p.image, ...(p.gallery || [])].filter(Boolean);
   let slide = 0;
   dialog.innerHTML = `<button class="dialog-close" type="button" aria-label="Close product details">×</button><div class="dialog-media" style="background-image:url('${gallery[0]}')"><button class="carousel-arrow prev" type="button" aria-label="Previous image">‹</button><button class="carousel-arrow next" type="button" aria-label="Next image">›</button><div class="carousel-dots">${gallery.map((_, i) => `<button type="button" class="carousel-dot ${i === 0 ? 'active' : ''}" data-slide="${i}" aria-label="View image ${i + 1}"></button>`).join('')}</div></div><div class="dialog-copy"><p class="eyebrow">${p.category}</p><h2>${p.name}</h2><p>${p.description}</p><p class="dialog-price">MWK ${p.price_mwk.toLocaleString()}</p><span class="availability ${cls}">${label}</span><div class="dialog-actions"><a class="button button-primary" href="${whatsapp(p)}" target="_blank" rel="noopener">Enquire on WhatsApp</a><a class="button button-secondary" href="product.html?slug=${p.slug}">View full details</a></div></div>`;
   const updateSlide = () => { dialog.querySelector('.dialog-media').style.backgroundImage = `url('${gallery[slide]}')`; dialog.querySelectorAll('.carousel-dot').forEach((dot, i) => dot.classList.toggle('active', i === slide)); };
