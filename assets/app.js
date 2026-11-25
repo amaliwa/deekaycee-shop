@@ -1,3 +1,4 @@
+const shippingStyles = document.createElement('link'); shippingStyles.rel = 'stylesheet'; shippingStyles.href = 'assets/shipping-section.css'; document.head.appendChild(shippingStyles);
 const phone = '265888068487';
 let category = 'all';
 let products = [];
