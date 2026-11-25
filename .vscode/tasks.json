@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "PHP: Start local server",
+      "type": "shell",
+      "command": "C:\\wamp64\\bin\\php\\php8.4.15\\php.exe -S localhost:8000 -t .",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "PHP: Validate current file",
+      "type": "shell",
+      "command": "C:\\wamp64\\bin\\php\\php8.4.15\\php.exe -l ${file}",
+      "problemMatcher": []
+    }
+  ]
+}
+
