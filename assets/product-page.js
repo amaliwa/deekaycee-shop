@@ -2,7 +2,7 @@ const phone = '265888068487';
 const slug = new URLSearchParams(location.search).get('slug');
 const root = document.querySelector('#product-detail');
 function availability(stock) { return stock === 0 ? ['Out of stock', 'out'] : stock <= 2 ? ['Only ' + stock + ' left', 'low'] : ['In stock', '']; }
-fetch('data/ai-catalog.json').then(r => r.json()).then(items => {
+Promise.resolve().then(() => { const saved = localStorage.getItem('dkc-demo-catalog-v1'); return saved ? JSON.parse(saved) : fetch('data/ai-catalog.json').then(r => r.json()); }).then(items => {
   const p = items.find(item => item.slug === slug) || items[0];
   const [label, cls] = availability(p.stock_quantity);
   const message = encodeURIComponent(`Hi DKC, I’m enquiring about the ${p.name} (${p.category}, MWK ${p.price_mwk.toLocaleString()}). Is it available?`);
