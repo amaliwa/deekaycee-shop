@@ -1,1 +1,8 @@
-document.querySelector('#image-preview')?.addEventListener('click',e=>{if(e.target.closest('button')||e.target.tagName!=='IMG')return;const thumb=e.target.closest('.photo-thumb'),grid=document.querySelector('#image-preview');if(!thumb||thumb===grid.firstElementChild)return;grid.insertBefore(thumb,grid.firstElementChild);grid.querySelectorAll('.photo-thumb').forEach((x,i)=>{x.classList.toggle('cover',i===0);const label=x.querySelector('small');if(label)label.textContent=i===0?'Cover':'Angle '+(i+1)});});
+photoGrid.addEventListener('click', event => {
+  if (event.target.tagName !== 'IMG') return;
+  const index = Array.from(photoGrid.children).indexOf(event.target.closest('.photo-thumb'));
+  if (index < 1) return;
+  const photos = [main, ...gallery];
+  const [cover] = photos.splice(index, 1);
+  updatePhotos([cover, ...photos]);
+});
