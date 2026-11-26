@@ -4,8 +4,12 @@
     share: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="18" cy="5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="6" cy="12" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="18" cy="19" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m8.2 10.8 7.6-4.4M8.2 13.2l7.6 4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
     arrow: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m15 18-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
   };
-  document.querySelectorAll('.enquire').forEach(el => { el.insertAdjacentHTML('afterbegin', icons.whatsapp); });
-  document.querySelectorAll('.whatsapp-button').forEach(el => { el.querySelector('span')?.replaceWith(document.createRange().createContextualFragment(icons.whatsapp)); });
-  document.querySelectorAll('.share-button').forEach(el => { el.textContent = ''; el.insertAdjacentHTML('beforeend', icons.share); });
-  document.querySelectorAll('.back-link').forEach(el => { el.innerHTML = icons.arrow + '<span>Back to shop</span>'; });
+  const enhance = () => {
+    document.querySelectorAll('.enquire:not([data-icon-ready])').forEach(el => { el.insertAdjacentHTML('afterbegin', icons.whatsapp); el.dataset.iconReady = 'true'; });
+    document.querySelectorAll('.whatsapp-button:not([data-icon-ready])').forEach(el => { el.querySelector('span')?.replaceWith(document.createRange().createContextualFragment(icons.whatsapp)); el.dataset.iconReady = 'true'; });
+    document.querySelectorAll('.share-button:not([data-icon-ready])').forEach(el => { el.textContent = ''; el.insertAdjacentHTML('beforeend', icons.share); el.dataset.iconReady = 'true'; });
+    document.querySelectorAll('.back-link:not([data-icon-ready])').forEach(el => { el.innerHTML = icons.arrow + '<span>Back to shop</span>'; el.dataset.iconReady = 'true'; });
+  };
+  enhance();
+  new MutationObserver(enhance).observe(document.body, { childList: true, subtree: true });
 })();
