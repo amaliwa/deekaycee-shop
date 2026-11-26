@@ -5,5 +5,49 @@ function buildMatrix(){const colors=splitVariant(document.querySelector('#varian
 function renderMatrix(){const b=document.querySelector('#variant-rows');if(!b)return;b.innerHTML=variantRows.map((r,i)=>`<tr><td><input data-v="color" data-i="${i}" value="${r.color}"></td><td><input data-v="size" data-i="${i}" value="${r.size}" placeholder="—"></td><td><input data-v="sku" data-i="${i}" value="${r.sku}" placeholder="Optional"></td><td><input data-v="stock" data-i="${i}" type="number" min="0" value="${r.stock}"></td><td><button type="button" class="variant-remove" data-remove="${i}">×</button></td></tr>`).join('');updateRollups()}
 function updateVariantRows(){document.querySelectorAll('[data-v]').forEach(el=>{const r=variantRows[Number(el.dataset.i)];if(r)r[el.dataset.v]=el.dataset.v==='stock'?Number(el.value):el.value});updateRollups()}function updateRollups(){const total=variantRows.reduce((n,r)=>n+Number(r.stock||0),0),by={};variantRows.forEach(r=>by[r.color]=(by[r.color]||0)+Number(r.stock||0));const s=document.querySelector('#variant-summary'),roll=document.querySelector('#variant-rollup');if(s)s.innerHTML=`<strong>${total} total units</strong> · ${variantRows.length} variants`;if(roll)roll.textContent=Object.entries(by).map(([k,v])=>`${k}: ${v}`).join(' · ')}
 function loadVariants(){variantSection();const p=currentSaved();variantRows=p?.variants?.map(x=>({...x}))||[];variantEnabled=Boolean(p?.variants?.length);const toggle=document.querySelector('#variant-enabled'),builder=document.querySelector('#variant-builder');toggle.checked=variantEnabled;builder.classList.toggle('hidden',!variantEnabled);document.querySelector('#variant-colours').value=[...new Set(variantRows.map(x=>x.color))].join(', ');document.querySelector('#variant-sizes').value=[...new Set(variantRows.map(x=>x.size).filter(Boolean))].join(', ');if(variantEnabled)renderMatrix()}
-function imagesFromEditor(){return [...document.querySelectorAll('#image-preview img')].map(x=>x.src)}function saveAll(e){e.preventDefault();e.stopImmediatePropagation();const name=document.querySelector('#product-name').value.trim(),existing=currentSaved(),id=existing?.id||('product-'+Date.now()),baseSlug=existing?.slug||`${name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}-${Date.now()}`,images=imagesFromEditor(),rows=variantEnabled?variantRows.map(x=>({...x,stock:Number(x.stock||0)})):[],total=rows.reduce((n,x)=>n+x.stock,0),p={...(existing||{}),id,slug:baseSlug,name,category:document.querySelector('#product-category').value,subcategory:document.querySelector('#product-subcategory')?.value||'',sizes:document.querySelector('#product-sizes')?.value||'',colors:[...new Set(rows.map(x=>x.color).filter(Boolean))],variants:rows,price_mwk:Number(document.querySelector('#product-price').value),stock_quantity:variantEnabled?total:Number(document.querySelector('#product-stock').value||0),image:images[0]||document.querySelector('#product-main-image-url').value.trim()||existing?.image||'assets/shop-front.webp',gallery:images.slice(1),description:document.querySelector('#product-description').value.trim()||'Available from DeeKayCee Shopping & Shipping.'};const items=JSON.parse(localStorage.getItem('dkc-demo-catalog-v1')||'[]'),index=items.findIndex(x=>x.id===id||x.slug===existing?.slug);index>=0?items[index]=p:items.unshift(p);localStorage.setItem('dkc-demo-catalog-v1',JSON.stringify(items));document.querySelector('#save-notice').textContent=existing?`${p.name} changes saved`:`${p.name} added`;if(typeof resetForm==='function')resetForm();if(typeof renderProducts==='function')renderProducts();if(typeof show==='function')show('products')}
+function saveAll(event) {
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  if (q('#save-button').disabled) return;
+  const field = selector => q(selector).value;
+  const name = field('#product-name').trim();
+  const rows = variantEnabled ? variantRows.map(row => ({...row, stock: Number(row.stock || 0)})) : [];
+  const product = {
+    ...(editing || {}),
+    id: editing?.id || editing?.slug || 'product-' + Date.now(),
+    slug: editing?.slug || slug(name) + '-' + Date.now(),
+    name,
+    category: field('#product-category'),
+    subcategory: q('#product-subcategory')?.value || '',
+    sizes: q('#product-sizes')?.value || '',
+    variant: q('#product-variant')?.value || '',
+    colors: [...new Set(rows.map(row => row.color).filter(Boolean))],
+    variants: rows,
+    price_mwk: Number(field('#product-price')),
+    stock_quantity: variantEnabled ? rows.reduce((total, row) => total + row.stock, 0) : Number(field('#product-stock')),
+    image: main || 'assets/shop-front.webp',
+    gallery: [...gallery],
+    description: field('#product-description').trim() || 'Available from DeeKayCee Shopping & Shipping.'
+  };
+  let items;
+  try {
+    const saved = localStorage.getItem(KEY);
+    items = saved ? JSON.parse(saved) : [...catalog];
+    const index = items.findIndex(item => item.slug === product.slug);
+    if (index < 0) items.unshift(product);
+    else items[index] = product;
+    localStorage.setItem(KEY, JSON.stringify(items));
+  } catch (error) {
+    q('#form-message').textContent = error.name === 'QuotaExceededError'
+      ? 'Browser storage is full. Your changes are still here. Use smaller photos and save again.'
+      : 'Could not save in this browser. Your changes are still here. Please try again.';
+    return;
+  }
+  catalog = items;
+  polishDirty = false;
+  q('#save-notice').textContent = name + (editing ? ' changes saved' : ' added');
+  resetForm();
+  renderProducts();
+  show('products');
+}
 const watcher=new MutationObserver(()=>{const editor=document.querySelector('#editor-view');if(editor&&!editor.classList.contains('hidden'))loadVariants()});watcher.observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']});document.addEventListener('click',e=>{if(e.target.dataset.remove!==undefined){variantRows.splice(Number(e.target.dataset.remove),1);renderMatrix()}});document.querySelector('#product-form')?.addEventListener('submit',saveAll,true);
