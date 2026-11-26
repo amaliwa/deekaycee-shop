@@ -1,3 +1,47 @@
-let polishImages=[],polishDirty=false;const polishRoot=document.querySelector('#image-preview');
-function syncImages(){if(!polishRoot)return;polishImages=[...polishRoot.querySelectorAll('img')].map(x=>x.src);polishRoot.querySelectorAll('.photo-actions').forEach(x=>x.remove());[...polishRoot.children].forEach((thumb,i)=>{const actions=document.createElement('div');actions.className='photo-actions';actions.innerHTML=`${i?'<button type="button" data-polish-cover="'+i+'">Make cover</button>':''}<button type="button" data-polish-remove="${i}">Remove</button>`;thumb.appendChild(actions)})}
-new MutationObserver(syncImages).observe(polishRoot,{childList:true});document.querySelector('#product-form').addEventListener('input',()=>polishDirty=true);document.querySelector('#image-preview').addEventListener('click',e=>{const cover=e.target.dataset.polishCover,remove=e.target.dataset.polishRemove;if(cover!==undefined){const x=polishImages[Number(cover)];polishImages.splice(Number(cover),1);polishImages.unshift(x);polishRoot.innerHTML=polishImages.map((src,i)=>`<div class="photo-thumb ${i?'':'cover'}"><img src="${src}" alt=""><small>${i?'Angle '+(i+1):'Cover'}</small></div>`).join('');polishDirty=true}if(remove!==undefined){polishImages.splice(Number(remove),1);polishRoot.innerHTML=polishImages.map((src,i)=>`<div class="photo-thumb ${i?'':'cover'}"><img src="${src}" alt=""><small>${i?'Angle '+(i+1):'Cover'}</small></div>`).join('');polishDirty=true}});document.querySelector('#product-form').addEventListener('submit',()=>setTimeout(()=>{const slug=document.querySelector('#edit-slug').value,items=JSON.parse(localStorage.getItem('dkc-demo-catalog-v1')||'[]'),p=items.find(x=>x.slug===slug);if(p&&polishImages.length){p.image=polishImages[0];p.gallery=polishImages.slice(1);localStorage.setItem('dkc-demo-catalog-v1',JSON.stringify(items))}polishDirty=false},50));['#back-products','#cancel-edit'].forEach(sel=>document.querySelector(sel)?.addEventListener('click',e=>{if(polishDirty&&!confirm('Discard your unsaved changes?')){e.preventDefault();e.stopImmediatePropagation()}} ,true));
+let polishDirty = false;
+const photoGrid = document.querySelector('#image-preview');
+const productForm = document.querySelector('#product-form');
+
+function addPhotoActions() {
+  for (const [index, thumb] of Array.from(photoGrid.children).entries()) {
+    if (thumb.querySelector('.photo-actions')) continue;
+    const actions = document.createElement('div');
+    actions.className = 'photo-actions';
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.dataset.polishRemove = index;
+    remove.textContent = 'Remove';
+    actions.appendChild(remove);
+    thumb.appendChild(actions);
+  }
+}
+
+function updatePhotos(photos) {
+  main = photos[0] || '';
+  gallery = photos.slice(1);
+  q('#product-main-image-url').value = main.startsWith('data:') ? '' : main;
+  polishDirty = true;
+  preview();
+}
+
+new MutationObserver(addPhotoActions).observe(photoGrid, {childList: true});
+productForm.addEventListener('input', () => { polishDirty = true; });
+photoGrid.addEventListener('click', event => {
+  const button = event.target.closest('[data-polish-remove]');
+  if (!button) return;
+  const photos = main ? [main, ...gallery] : [...gallery];
+  photos.splice(Number(button.dataset.polishRemove), 1);
+  updatePhotos(photos);
+});
+
+for (const selector of ['#back-products', '#cancel-edit']) {
+  q(selector).addEventListener('click', event => {
+    if (!polishDirty) return;
+    if (confirm('Discard your unsaved changes?')) {
+      polishDirty = false;
+    } else {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  }, true);
+}
