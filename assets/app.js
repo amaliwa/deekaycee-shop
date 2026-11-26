@@ -44,7 +44,7 @@ function openDetails(p) {
 }
 function render() {
   const query = (search?.value || '').toLowerCase();
-  const shown = products.filter(p => (category === 'all' || p.category === category) && (!query || `${p.name} ${p.category}`.toLowerCase().includes(query)));
+  const shown = products.filter(p => (category === 'all' || p.category === category || (category === 'Shoes' && p.category === 'Footwear')) && (!query || `${p.name} ${p.category}`.toLowerCase().includes(query)));
   empty.hidden = shown.length > 0;
   grid.innerHTML = shown.map(p => { const [label, cls] = availability(p.stock_quantity); return `<article class="product-card" data-slug="${p.slug}" tabindex="0"><div class="product-image" style="background-image:url('${p.image}');background-size:cover;background-position:center"><span class="availability ${cls}">${label}</span></div><div class="product-info"><div class="product-meta"><span class="product-name">${p.name}</span><span class="product-price">MWK ${p.price_mwk.toLocaleString()}</span></div><div class="product-category">${p.category}</div><a class="enquire" href="${whatsapp(p)}" target="_blank" rel="noopener">Enquire on WhatsApp</a></div></article>`; }).join('');
 }
