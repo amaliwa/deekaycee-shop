@@ -3,3 +3,7 @@
 .product-page>#product-detail>.product-detail{display:block!important;grid-template-columns:none!important;padding:0.8rem!important;margin:0!important;min-height:0!important}
 .product-page>#product-detail>.product-detail>.product-detail-image{display:block!important;width:100%!important;min-height:0!important;height:auto!important;aspect-ratio:4/3!important;max-height:280px!important;margin:0!important}
 .product-page>#product-detail>.back-link{margin:0 0 .75rem!important;padding:.45rem 0!important}
+.product-dialog{max-height:calc(100vh - 24px)!important;max-height:calc(100dvh - 24px)!important;overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.product-dialog .dialog-media{min-height:240px;max-height:52vh}
+.product-dialog .dialog-copy{padding-bottom:32px}
+@media(max-width:600px){.product-dialog{width:calc(100% - 24px)!important;border-radius:20px!important}.product-dialog .dialog-media{min-height:210px;max-height:42vh}.product-dialog .dialog-copy{padding:20px 20px 32px}.product-dialog .dialog-actions{gap:8px}.product-dialog .dialog-actions .button{min-height:44px;padding:12px 14px}}
